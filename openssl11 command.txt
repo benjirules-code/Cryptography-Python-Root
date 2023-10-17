@@ -1,0 +1,47 @@
+openssl req -x509 -newkey rsa:2048 -keyout rootca.key -out rootca.crt -config openssl.cnf
+
+
+openssl req -newkey rsa:2048 -keyout intermediate.key -out intermediate.csr -config openssl.cnf
+
+openssl x509 -req -in intermediate.csr -CA rootca.crt -CAkey rootca.key -CAcreateserial -out intermediate.crt -days 365 -extensions v3_ca -extfile openssl.cnf
+
+openssl x509 -req -in intermediate.csr -CA rootca.crt -CAkey rootca.key -CAcreateserial -out intermediate.crt -days 365 -extensions v3_ca -extfile openssl.cnf
+
+openssl req -newkey rsa:2048 -keyout entity.key -out entity.csr -config openssl.cnf
+
+openssl x509 -req -in entity.csr -CA rootca.crt -CAkey rootca.key -CAcreateserial -out entity.crt -days 365 -extensions v3_ca -extfile openssl.cnf
+
+cat entity.crt intermediate.crt rootca.crt > certificate_chain.crt
+
+
+openssl req -x509 -newkey rsa:2048 -keyout intermediate.key -out intermediate.crt -config openssl.cnf -extensions v3_ca -days 3650 -nodes
+
+openssl req -newkey rsa:2048 -keyout entity.key -out entity.csr -config openssl.cnf -nodes
+
+openssl x509 -req -in entity.csr -CA rootca.crt -CAkey rootca.key -CAcreateserial -out entity.crt -days 365 -extensions v3_req -extfile openssl.cnf
+
+
+
+touch certificate_log file
+
+openssl req -x509 -newkey rsa:2048 -keyout rootca.key -out rootca.crt -config openssl.cnf -extensions v3_ca -days 3650 -nodes
+
+echo "Root CA Certificate" >> certificate_log.txt
+openssl x509 -in rootca.crt -noout -dates | grep "notBefore\|notAfter" >> certificate_log.txt
+
+openssl req -newkey rsa:2048 -keyout intermediate.key -out intermediate.csr -config openssl.cnf -nodes
+openssl x509 -req -in intermediate.csr -CA rootca.crt -CAkey rootca.key -CAcreateserial -out intermediate.crt -days 365 -extensions v3_ca -extfile openssl.cnf
+
+# Append certificate details to the log file
+
+echo "Intermediate CA Certificate" >> certificate_log.txt
+openssl x509 -in intermediate.crt -noout -dates | grep "notBefore\|notAfter" >> certificate_log.txt
+
+openssl req -newkey rsa:2048 -keyout entity.key -out entity.csr -config openssl.cnf -nodes
+openssl x509 -req -in entity.csr -CA rootca.crt -CAkey rootca.key -CAcreateserial -out entity.crt -days 365 -extensions v3_req -extfile openssl.cnf
+
+# Append certificate details to the log file
+
+echo "Entity Certificate" >> certificate_log.txt
+openssl x509 -in entity.crt -noout -dates | grep "notBefore\|notAfter" >> certificate_log.txt
+
