@@ -1,0 +1,117 @@
+# Root CA Configuration
+[ ca ]
+default_ca = root_ca
+
+[ root_ca ]
+dir = ./root
+certs = $dir/certs
+crl_dir = $dir/crl
+new_certs_dir = $dir/newcerts
+database = $dir/index
+serial = $dir/serial
+private_key = ./rootca.key
+certificate = ./rootca.crt
+default_md = sha256
+default_days = 7299
+default_crl_days = 30
+default_cert_type = ca
+policy = policy_match
+
+[ policy_match ]
+countryName = match
+stateOrProvinceName = match
+organizationName = match
+commonName = supplied
+
+# Root CA Distinguished Name
+[ req ]
+default_bits = 4096
+default_md = sha256
+prompt = no
+distinguished_name = Test Code Signing Root CA - G1
+
+[ root_ca_distinguished_name ]
+countryName = GB
+stateOrProvinceName = London
+localityName = London
+organizationName = Test EE Limited
+commonName = Test Code Signing Root CA - G1
+
+[ v3_ca ]
+basicConstraints = CA:TRUE
+keyUsage = keyCertSign, cRLSign
+extendedKeyUsage = codeSigning
+
+# Intermediate CA Configuration
+[ ca ]
+default_ca = intermediate_ca
+
+[ intermediate_ca ]
+dir = ./intermediate
+certs = $dir/certs
+crl_dir = $dir/crl
+new_certs_dir = $dir/newcerts
+database = $dir/index
+serial = $dir/serial
+private_key = ./intermediate.key
+certificate = ./intermediate.crt
+default_md = sha256
+default_days = 5474
+default_crl_days = 30
+default_cert_type = ca
+policy = policy_match
+
+[ req ]
+default_bits = 3072
+default_md = sha256
+prompt = no
+distinguished_name = Test Code Signing Issuing CA - G1
+
+[ req_distinguished_name ]
+countryName = GB
+stateOrProvinceName = London
+localityName = London
+organizationName = Test - Code Signing Issuing CA - G1
+commonName = Intermediate CA
+
+[ v3_ca ]
+[ v3_ca ]
+basicConstraints = CA:TRUE
+keyUsage = keyCertSign, cRLSign
+extendedKeyUsage = codeSigning
+
+# Entity Certificate Configuration
+[ ca ]
+default_ca = entity_ca
+
+[ entity_ca ]
+dir = ./entity
+certs = $dir/certs
+crl_dir = $dir/crl
+new_certs_dir = $dir/newcerts
+database = $dir/index
+serial = $dir/serial
+private_key = ./entity.key
+certificate = ./entity.crt
+default_md = sha256
+default_days = 365
+default_crl_days = 30
+default_cert_type = server
+policy = policy_match
+
+[ req ]
+default_bits = 2048
+default_md = sha256
+prompt = no
+distinguished_name = req_distinguished_name
+
+[ req_distinguished_name ]
+countryName = US
+stateOrProvinceName = New York
+localityName = New York City
+organizationName = My Organization
+commonName = Entity
+
+[ v3_req ]
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
