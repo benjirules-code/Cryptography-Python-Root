@@ -1,0 +1,66 @@
+# openssl.cnf
+
+# Root CA Configuration
+[ ca ]
+default_ca = root_ca
+
+[ root_ca ]
+dir = ./root
+certs = $dir/certs
+crl_dir = $dir/crl
+new_certs_dir = $dir/newcerts
+database = $dir/index
+serial = $dir/serial
+private_key = ./rootca.key
+certificate = ./rootca.crt
+default_md = sha256
+default_days = 3650
+default_crl_days = 30
+default_cert_type = ca
+policy = policy_match
+
+[ policy_match ]
+countryName = match
+stateOrProvinceName = match
+organizationName = match
+commonName = supplied
+
+# Intermediate CA Configuration
+[ req ]
+default_bits = 3072
+default_keyfile = ./intermediate.key
+default_md = sha256
+prompt = no
+distinguished_name = req_distinguished_name
+req_extensions = v3_ca
+
+[ req_distinguished_name ]
+countryName = GB
+stateOrProvinceName = Suffolk
+localityName = Ipswich
+organizationName = Intermediate CA
+commonName = Intermediate CA
+
+[ v3_ca ]
+basicConstraints = CA:TRUE
+keyUsage = keyCertSign, cRLSign
+
+# Entity Configuration
+[ req ]
+default_bits = 2048
+default_keyfile = ./entity.key
+default_md = sha256
+prompt = no
+distinguished_name = req_distinguished_name
+req_extensions = v3_req
+
+[ req_distinguished_name ]
+countryName = GB
+stateOrProvinceName = Suffolk
+localityName = Ipswich
+organizationName = My Organization
+commonName = Entity
+
+[ v3_req ]
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
